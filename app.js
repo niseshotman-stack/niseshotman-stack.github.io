@@ -51,11 +51,12 @@ function handleMove(e) {
   e.target.textContent = currentPlayer;
   e.target.style.pointerEvents = "none";
 
-
-  if (checkWin()) {
+  const winningCells = checkWin();
+  if (winningCells) {
     statusEl.textContent = `🎉 Победил: ${currentPlayer}`;
     isRunning = false;
     gameStats[currentPlayer === "X" ? "xWins" : "oWins"]++;
+    highlightWinningCells(winningCells);
     return;
   }
 
@@ -74,13 +75,19 @@ function handleMove(e) {
 
 
 function checkWin() {
-  return winPatterns.some(pattern => {
+  for (let pattern of winPatterns) {
     const [a, b, c] = pattern;
-    return (
-      board[a] &&
-      board[a] === board[b] &&
-      board[a] === board[c]
-    );
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return [a, b, c]; 
+    }
+  }
+  return null; 
+}
+
+function highlightWinningCells(winningIndices) {
+  winningIndices.forEach(index => {
+    const cell = document.querySelector(`[data-index="${index}"]`);
+    cell.classList.add("winning-cell");
   });
 }
 
