@@ -11,8 +11,30 @@
   <main class="game">
     <h1>Крестики-нолики</h1>
 
+    <div class="difficulty">
+      <p>Выбор режима:</p>
+      <button class="difficulty-btn" id="easyBtn" data-difficulty="easy">😊 Легкий</button>
+      <button class="difficulty-btn" id="hardBtn" data-difficulty="hard">🤖 Тяжелый</button>
+      <span id="currentDifficulty">Режим не выбран</span>
+    </div>
+
     <div class="info">
       <span id="status">Ход: X</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-label">X побед:</span>
+        <span class="stat-value" id="xWins">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Ничьих:</span>
+        <span class="stat-value" id="draws">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">O побед:</span>
+        <span class="stat-value" id="oWins">0</span>
+      </div>
     </div>
 
     <div class="board" id="board"></div>
