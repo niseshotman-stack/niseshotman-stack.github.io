@@ -13,6 +13,26 @@ body {
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  position: relative;
+}
+
+.mute-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(0, 57, 166, 0.95);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mute-btn.muted {
+  background: rgba(255, 0, 0, 0.9);
 }
 
 .game {
@@ -22,6 +42,36 @@ body {
   border-radius: 15px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
+}
+
+.start-screen,
+.game-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.start-screen.hidden,
+.game-screen.hidden {
+  display: none;
+}
+
+.subtitle {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  opacity: 0.95;
+}
+
+.start-btn {
+  margin-top: 10px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
 }
 
 h1 {
@@ -69,6 +119,21 @@ h1 {
   background: #FF0000;
   border-color: #FF0000;
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+}
+
+.game-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+  text-transform: none;
 }
 
 #currentDifficulty {

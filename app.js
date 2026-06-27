@@ -6,6 +6,11 @@ const pvpBtn = document.getElementById("pvpBtn");
 const easyBtn = document.getElementById("easyBtn");
 const hardBtn = document.getElementById("hardBtn");
 const difficultyDisplay = document.getElementById("currentDifficulty");
+const muteBtn = document.getElementById("muteBtn");
+const startScreen = document.getElementById("startScreen");
+const gameScreen = document.getElementById("gameScreen");
+const startBtn = document.getElementById("startBtn");
+const backBtn = document.getElementById("backBtn");
 
 const STORAGE_KEY = "tictactoe_state";
 
@@ -13,6 +18,9 @@ let currentPlayer = "X";
 let board = Array(9).fill("");
 let isRunning = true;
 let difficulty = null;
+let isMuted = false;
+let musicTimer = null;
+let currentAudio = null;
 let gameStats = {
   xWins: 0,
   oWins: 0,
@@ -65,6 +73,65 @@ function clearGameState() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
+function stopTheme() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+  if (musicTimer) {
+    clearInterval(musicTimer);
+    musicTimer = null;
+  }
+}
+
+function playTheme(theme) {
+  if (isMuted) return;
+
+  stopTheme();
+
+  const trackMap = {
+    pvp: "Mortal Combat.mp3",
+    easy: "bezumnyy-zabeg-krolikov-2-1e4752.mp3",
+    hard: "veselyy-besporyadok-1-14d595.mp3"
+  };
+
+  const audioUrl = trackMap[theme] || trackMap.pvp;
+  const audio = new Audio(audioUrl);
+  audio.loop = true;
+  audio.volume = 0.2;
+  currentAudio = audio;
+
+  const playAudio = () => {
+    if (isMuted || !currentAudio) return;
+    currentAudio.currentTime = 0;
+    currentAudio.play().catch(() => {});
+  };
+
+  playAudio();
+}
+
+function toggleMusic() {
+  isMuted = !isMuted;
+  muteBtn.textContent = isMuted ? "🔈 Музыка" : "🔊 Музыка";
+  muteBtn.classList.toggle("muted", isMuted);
+
+  if (isMuted) {
+    stopTheme();
+  } else if (difficulty) {
+    playTheme(difficulty);
+  }
+}
+
+function showStartScreen() {
+  startScreen.classList.remove("hidden");
+  gameScreen.classList.add("hidden");
+}
+
+function showGameScreen() {
+  startScreen.classList.add("hidden");
+  gameScreen.classList.remove("hidden");
+}
 
 function initBoard() {
   boardEl.innerHTML = "";
@@ -82,8 +149,9 @@ function initBoard() {
 
 function handleMove(e) {
   const index = e.target.dataset.index;
+  const isCorrectTurn = difficulty === "pvp" ? true : currentPlayer === "X";
 
-  if (!isRunning || board[index] || !difficulty) return;
+  if (!isRunning || board[index] || !difficulty || !isCorrectTurn) return;
 
   board[index] = currentPlayer;
   e.target.textContent = currentPlayer;
@@ -265,6 +333,7 @@ function setDifficulty(level) {
   
   statusEl.textContent = "Ход: X";
   saveGameState();
+  playTheme(level);
 }
 
 function scheduleAutoRestart() {
@@ -289,17 +358,31 @@ function restart() {
   isRunning = true;
   statusEl.textContent = `Ход: X`;
   initBoard();
+  showGameScreen();
+}
+
+function goBackToMenu() {
+  stopTheme();
+  showStartScreen();
 }
 
 
 restartBtn.addEventListener("click", restart);
+backBtn.addEventListener("click", goBackToMenu);
+muteBtn.addEventListener("click", toggleMusic);
+startBtn.addEventListener("click", () => {
+  if (!difficulty) {
+    difficultyDisplay.textContent = "⚠ Сначала выберите режим";
+    return;
+  }
+  restart();
+});
 
 pvpBtn.addEventListener("click", () => setDifficulty("pvp"));
 easyBtn.addEventListener("click", () => setDifficulty("easy"));
 hardBtn.addEventListener("click", () => setDifficulty("hard"));
 
 if (loadGameState()) {
-
   updateStats();
   if (difficulty === "pvp") {
     difficultyDisplay.textContent = "👥 Выбран режим: PvP";
@@ -315,6 +398,9 @@ if (loadGameState()) {
   if (isRunning) {
     statusEl.textContent = `Ход: ${currentPlayer}`;
   }
+  showGameScreen();
+} else {
+  showStartScreen();
 }
 
 initBoard();
